@@ -17,6 +17,7 @@ Set the token locally in .env and on Streamlit Cloud in Secrets.
 """
 
 import os
+import time
 
 # Load variables from a local .env file if present. On Streamlit Cloud the
 # same keys come from Secrets as environment variables, so this is a no-op
@@ -34,6 +35,7 @@ DEFAULT_MODELS = {
     "huggingface": "meta-llama/Llama-3.1-8B-Instruct",
 }
 DEFAULT_TOP_K = 4
+DEFAULT_MIN_SCORE = 0.2   # below this top similarity, treat retrieval as too weak to answer
 
 SYSTEM_PROMPT = (
     "You are a helpful assistant that answers questions using only the "
@@ -122,6 +124,8 @@ class RAGPipeline:
         """
         Call the LLM. Both Groq and HuggingFace return an OpenAI-style
         response, so the access path is the same.
+
+        Returns (text, token_usage_dict).
         """
         if self.provider == "groq":
             resp = self.client.chat.completions.create(
@@ -137,34 +141,81 @@ class RAGPipeline:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
             )
-        return resp.choices[0].message.content.strip()
 
-    def answer(self, query, chat_history=None, k=DEFAULT_TOP_K):
+        text = resp.choices[0].message.content.strip()
+        usage = getattr(resp, "usage", None)
+        tokens = {
+            "prompt_tokens": getattr(usage, "prompt_tokens", 0) or 0,
+            "completion_tokens": getattr(usage, "completion_tokens", 0) or 0,
+            "total_tokens": getattr(usage, "total_tokens", 0) or 0,
+        }
+        return text, tokens
+
+    def answer(self, query, chat_history=None, k=DEFAULT_TOP_K, min_score=DEFAULT_MIN_SCORE):
         """
-        Full RAG cycle for one question.
+        Full RAG cycle for one question, with metrics and a confidence guard.
 
         Returns:
             {
               "answer": str,
-              "sources": [str, ...],   # readable labels for the UI
-              "hits": [ {text, metadata, score}, ... ]
+              "sources": [str, ...],
+              "hits": [ {text, metadata, score}, ... ],
+              "grounded": bool,          # False when retrieval was too weak
+              "confidence": float,       # top similarity score
+              "metrics": { ... }         # timing, chunk count, token usage
             }
         """
+        t0 = time.perf_counter()
         hits = self.store.search(query, k=k)
+        retrieval_time = time.perf_counter() - t0
 
-        if not hits:
+        top_score = float(hits[0]["score"]) if hits else 0.0
+        metrics = {
+            "retrieval_time": round(retrieval_time, 3),
+            "generation_time": 0.0,
+            "total_time": round(retrieval_time, 3),
+            "chunks_retrieved": len(hits),
+            "top_score": round(top_score, 3),
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+        }
+
+        # Confidence guard: if the best match is weak, do not let the model
+        # guess. This is the main defence against hallucination.
+        if not hits or top_score < min_score:
             return {
-                "answer": "I could not find anything relevant in the documents.",
+                "answer": ("I could not find a strong enough match in your "
+                           "documents to answer this confidently."),
                 "sources": [],
-                "hits": [],
+                "hits": hits,
+                "grounded": False,
+                "confidence": round(top_score, 3),
+                "metrics": metrics,
             }
 
         context, sources = format_context(hits)
         messages = build_messages(context, chat_history, query)
 
+        t1 = time.perf_counter()
         try:
-            answer = self._generate(messages)
+            answer, tokens = self._generate(messages)
         except Exception as e:
             answer = f"The model could not generate a response. ({e})"
+            tokens = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        generation_time = time.perf_counter() - t1
 
-        return {"answer": answer, "sources": sources, "hits": hits}
+        metrics.update({
+            "generation_time": round(generation_time, 3),
+            "total_time": round(retrieval_time + generation_time, 3),
+            **tokens,
+        })
+
+        return {
+            "answer": answer,
+            "sources": sources,
+            "hits": hits,
+            "grounded": True,
+            "confidence": round(top_score, 3),
+            "metrics": metrics,
+        }

@@ -10,18 +10,20 @@ The prompt constrains the model to answer only from the retrieved context
 and to say so when the answer is not present. This is the main guard
 against hallucination.
 
-LLM: HuggingFace serverless inference by default. Set the token in an
-env var HF_TOKEN (locally in .env, on Streamlit Cloud in Secrets).
-Swap providers by replacing _generate() only; the rest stays the same.
+LLM provider is pluggable:
+  - "groq"        (default) free, fast. Token from GROQ_API_KEY.
+  - "huggingface" fallback. Token from HF_TOKEN.
+Set the token locally in .env and on Streamlit Cloud in Secrets.
 """
 
 import os
 
-from huggingface_hub import InferenceClient
 
-
-DEFAULT_LLM = "meta-llama/Llama-3.1-8B-Instruct"
-DEFAULT_PROVIDER = "auto"   # let the router pick a provider that serves the model
+DEFAULT_PROVIDER = "groq"
+DEFAULT_MODELS = {
+    "groq": "llama-3.3-70b-versatile",
+    "huggingface": "meta-llama/Llama-3.1-8B-Instruct",
+}
 DEFAULT_TOP_K = 4
 
 SYSTEM_PROMPT = (
@@ -84,25 +86,48 @@ def build_messages(context, chat_history, query):
 
 
 class RAGPipeline:
-    def __init__(self, vector_store, model=DEFAULT_LLM, token=None,
-                 provider=DEFAULT_PROVIDER, temperature=0.2, max_tokens=512):
+    def __init__(self, vector_store, provider=DEFAULT_PROVIDER, model=None,
+                 token=None, temperature=0.2, max_tokens=512):
         self.store = vector_store
-        self.model = model
+        self.provider = provider
+        self.model = model or DEFAULT_MODELS.get(provider)
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.token = token or os.getenv("HF_TOKEN")
-        # provider routing goes through router.huggingface.co (the old
-        # api-inference.huggingface.co host is decommissioned).
-        self.client = InferenceClient(provider=provider, api_key=self.token)
+        self.client = self._make_client(token)
+
+    def _make_client(self, token):
+        """Build the LLM client for the chosen provider. Imports lazily."""
+        if self.provider == "groq":
+            from groq import Groq
+            key = token or os.getenv("GROQ_API_KEY")
+            return Groq(api_key=key)
+
+        if self.provider == "huggingface":
+            from huggingface_hub import InferenceClient
+            key = token or os.getenv("HF_TOKEN")
+            return InferenceClient(provider="auto", api_key=key)
+
+        raise ValueError(f"Unknown provider: {self.provider}")
 
     def _generate(self, messages):
-        """Single place that talks to the LLM. Replace to switch providers."""
-        resp = self.client.chat_completion(
-            messages=messages,
-            model=self.model,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-        )
+        """
+        Call the LLM. Both Groq and HuggingFace return an OpenAI-style
+        response, so the access path is the same.
+        """
+        if self.provider == "groq":
+            resp = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+            )
+        else:  # huggingface
+            resp = self.client.chat_completion(
+                messages=messages,
+                model=self.model,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+            )
         return resp.choices[0].message.content.strip()
 
     def answer(self, query, chat_history=None, k=DEFAULT_TOP_K):

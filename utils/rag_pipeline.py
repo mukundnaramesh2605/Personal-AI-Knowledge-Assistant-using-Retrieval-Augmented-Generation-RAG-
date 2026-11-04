@@ -18,10 +18,19 @@ Set the token locally in .env and on Streamlit Cloud in Secrets.
 
 import os
 
+# Load variables from a local .env file if present. On Streamlit Cloud the
+# same keys come from Secrets as environment variables, so this is a no-op
+# there and the code path stays identical.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 
 DEFAULT_PROVIDER = "groq"
 DEFAULT_MODELS = {
-    "groq": "llama-3.3-70b-versatile",
+    "groq": "openai/gpt-oss-120b",
     "huggingface": "meta-llama/Llama-3.1-8B-Instruct",
 }
 DEFAULT_TOP_K = 4

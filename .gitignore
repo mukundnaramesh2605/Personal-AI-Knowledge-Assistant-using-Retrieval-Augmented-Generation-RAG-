@@ -21,3 +21,4 @@ rad.json
 #Test results file
 TestResults.xml
 /project_docs
+utils/__pycache__/document_loader.cpython-311.pyc

@@ -24,3 +24,5 @@ TestResults.xml
 utils/__pycache__/document_loader.cpython-311.pyc
 utils/__pycache__/*
 utils/__pycache__/
+env.example
+.env

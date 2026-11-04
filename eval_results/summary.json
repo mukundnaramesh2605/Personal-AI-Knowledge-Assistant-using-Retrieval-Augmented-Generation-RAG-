@@ -1,0 +1,10 @@
+{
+  "total_questions": 3,
+  "retrieval_accuracy": 0.0,
+  "retrieval_checked": 2,
+  "avg_latency_s": 0.86,
+  "p95_latency_s": 0.898,
+  "in_scope_answered": "2/2",
+  "out_of_scope_refused": "0/1",
+  "quality_pass": "0/1"
+}

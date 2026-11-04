@@ -1,0 +1,18 @@
+[
+  {
+    "question": "What is the main topic of the document?",
+    "type": "in_scope",
+    "expected_source": "notes.txt",
+    "expected_keywords": ["hello"]
+  },
+  {
+    "question": "Summarize the key points covered.",
+    "type": "in_scope",
+    "expected_source": "notes.txt",
+    "expected_keywords": []
+  },
+  {
+    "question": "What is the capital of France and who won the 2018 World Cup?",
+    "type": "out_of_scope"
+  }
+]

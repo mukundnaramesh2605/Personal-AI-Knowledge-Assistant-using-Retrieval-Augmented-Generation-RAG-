@@ -1,0 +1,4 @@
+question,type,expected_source,retrieved_sources,retrieval_hit,grounded,top_score,latency_s,tokens,keyword_match,answer
+What is the main topic of the document?,in_scope,notes.txt,test_questions.json,False,True,0.373,0.901,444,False,I could not find the answer to that question in the provided documents.
+Summarize the key points covered.,in_scope,notes.txt,test_questions.json,False,True,0.332,0.875,433,,I could not find the summary of the key points in the provided documents.
+What is the capital of France and who won the 2018 World Cup?,out_of_scope,,test_questions.json,,True,0.282,0.805,446,,I could not find it in the documents.

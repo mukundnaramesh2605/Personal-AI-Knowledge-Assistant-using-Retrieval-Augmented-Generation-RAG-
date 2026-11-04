@@ -23,3 +23,4 @@ TestResults.xml
 /project_docs
 utils/__pycache__/document_loader.cpython-311.pyc
 utils/__pycache__/*
+utils/__pycache__/

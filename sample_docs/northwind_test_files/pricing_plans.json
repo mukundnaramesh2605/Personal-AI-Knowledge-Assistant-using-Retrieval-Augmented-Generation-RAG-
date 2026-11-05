@@ -1,0 +1,25 @@
+{
+  "company": "Northwind Robotics",
+  "api_version": "2.1",
+  "pricing_plans": [
+    {
+      "name": "Starter",
+      "robots_included": 1,
+      "monthly_fee_inr": 45000,
+      "support": "email"
+    },
+    {
+      "name": "Business",
+      "robots_included": 5,
+      "monthly_fee_inr": 180000,
+      "support": "priority phone"
+    },
+    {
+      "name": "Enterprise",
+      "robots_included": 20,
+      "monthly_fee_inr": 600000,
+      "support": "dedicated manager"
+    }
+  ],
+  "free_trial_days": 14
+}

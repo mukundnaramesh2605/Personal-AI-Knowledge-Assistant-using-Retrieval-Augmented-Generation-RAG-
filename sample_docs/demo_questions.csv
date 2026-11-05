@@ -1,0 +1,23 @@
+Type,Question,Source File,Expected Answer
+Single-file,How many paid leave days do I get per year?,company_handbook.pdf,24 days
+Single-file,What is the maximum payload of the Hauler X2?,hauler_x2_spec.docx,1500 kg
+Single-file,What was the total revenue in Q3 2026?,q3_sales_review.pptx,4.2 crore INR
+Single-file,What is the unit price of a Battery Pack 48V?,parts_inventory.xlsx,55000 INR
+Single-file,What is the warranty period for the Hauler X2?,warranty_table.xls,36 months
+Single-file,Which city is Sana Khan based in?,employees.csv,Hyderabad
+Single-file,How many days has ticket T-901 been open?,support_tickets.tsv,5 days
+Single-file,What is the restocking fee after 30 days?,refund_policy.rtf,15 percent
+Single-file,How long does Hauler X2 delivery take?,faq.html,6 to 8 weeks
+Single-file,How many staff work at the Coimbatore headquarters?,offices.htm,140 people
+Single-file,What is the current firmware version?,setup_guide.md,v3.4.1
+Single-file,When will the Hauler X2 Mini launch?,meeting_notes.txt,1 March 2027
+Single-file,What is the monthly fee for the Business pricing plan?,pricing_plans.json,180000 INR
+Cross-document,Which supplier provides both the LiDAR Sensor and the Safety Camera?,parts_inventory.xlsx,SenseTech
+Cross-document,What warranty tier does the Hauler X2 come with?,warranty_table.xls,Premium
+Cross-document,The Hauler X2 Mini launches in March 2027. What is its warranty period?,meeting_notes.txt + warranty_table.xls,24 months
+Cross-document,How many remote days are allowed and what are the core collaboration hours?,company_handbook.pdf,2 days per week; 11 AM to 4 PM IST
+Cross-document,Compare the Starter and Enterprise plan monthly fees.,pricing_plans.json,Starter 45000 INR vs Enterprise 600000 INR
+Chat-memory,What is the Hauler X2 battery life?,hauler_x2_spec.docx,8 hours on a single charge
+Chat-memory,And its top speed? (follow-up to previous question),hauler_x2_spec.docx,6 km/h
+Hallucination-test,What is the CEO's name?,Not in any file,Should say not found in the documents
+Hallucination-test,What is the robot's price in US dollars?,Not in any file,Should say not found in the documents

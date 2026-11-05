@@ -9,6 +9,10 @@ Built with [Streamlit](https://streamlit.io/), [FAISS](https://github.com/facebo
 [Sentence Transformers](https://www.sbert.net/), and a pluggable LLM backend
 ([Groq](https://groq.com/) by default, with a Hugging Face fallback).
 
+## Live app
+
+▶️ **[Try it here](https://personal-ai-knowledge-assistant-using-rag.streamlit.app/)** — hosted on Streamlit Community Cloud.
+
 ---
 
 ## Table of contents

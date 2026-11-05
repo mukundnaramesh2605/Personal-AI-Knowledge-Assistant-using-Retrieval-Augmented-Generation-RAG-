@@ -30,9 +30,9 @@ REPO_URL = "https://github.com/mukundnaramesh2605/Personal-AI-Knowledge-Assistan
 st.set_page_config(page_title="AI Knowledge Assistant", page_icon="📚", layout="wide")
 st.title("📚 Personal AI Knowledge Assistant")
 st.caption("Upload your documents and ask questions. Answers come only from what you upload.")
-st.divider('-', width="stretch")
+st.divider()
 st.link_button("🔗 View project on GitHub", REPO_URL)
-st.divider('-', width="stretch")
+st.divider()
 
 
 CHAT_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]

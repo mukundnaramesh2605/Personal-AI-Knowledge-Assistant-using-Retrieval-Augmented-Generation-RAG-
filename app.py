@@ -30,7 +30,6 @@ REPO_URL = "https://github.com/mukundnaramesh2605/Personal-AI-Knowledge-Assistan
 st.set_page_config(page_title="AI Knowledge Assistant", page_icon="📚", layout="wide")
 st.title("📚 Personal AI Knowledge Assistant")
 st.caption("Upload your documents and ask questions. Answers come only from what you upload.")
-st.divider()
 st.link_button("🔗 View project on GitHub", REPO_URL)
 st.divider()
 

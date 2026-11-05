@@ -27,9 +27,9 @@ from utils.rag_pipeline import RAGPipeline
 # ---------- Page setup ----------
 REPO_URL = "https://github.com/mukundnaramesh2605/Personal-AI-Knowledge-Assistant-using-Retrieval-Augmented-Generation-RAG-"
 st.set_page_config(page_title="AI Knowledge Assistant", page_icon="📚", layout="wide")
-st.link_button("🔗 View project on GitHub", REPO_URL)
 st.title("📚 Personal AI Knowledge Assistant")
 st.caption("Upload your documents and ask questions. Answers come only from what you upload.")
+st.link_button("🔗 View project on GitHub", REPO_URL)
 
 CHAT_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
 

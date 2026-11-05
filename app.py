@@ -33,7 +33,6 @@ st.caption("Upload your documents and ask questions. Answers come only from what
 st.link_button("🔗 View project on GitHub", REPO_URL)
 st.divider()
 
-
 CHAT_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
 
 

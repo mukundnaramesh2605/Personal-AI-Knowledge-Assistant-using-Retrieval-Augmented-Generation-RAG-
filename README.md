@@ -43,7 +43,8 @@ Retrieval-Augmented Generation (RAG) combines a search engine with a language
 model. Instead of relying on what the model memorized during training, the app:
 
 1. Indexes **your** documents into a searchable vector database.
-2. For each question, retrieves the most relevant passages.
+2. For each question, retrieves the most relevant passages using **semantic
+   search** (matching by meaning, not keywords).
 3. Feeds only those passages to the LLM as context.
 4. Returns an answer that is grounded in — and cites — your documents.
 
@@ -94,8 +95,8 @@ from outside it.
           │                                                                        │
  Question │   vector_store            rag_pipeline               LLM provider      │
  ─────────┼──▶ search(query, k)  ──▶  build grounded prompt  ──▶  Groq / HF   ──┐   │
-          │   top-k cosine-sim        + confidence guard                       │   │
-          │   chunks                                                           ▼   │
+          │   top-k semantic          + confidence guard                       │   │
+          │   (cosine-sim) chunks                                              ▼   │
           │                                                          answer + sources│
           └────────────────────────────────────────────────────────────────────┘
 ```
@@ -111,8 +112,9 @@ from outside it.
 3. **Embed & index** — `vector_store` encodes chunks with the
    `all-MiniLM-L6-v2` Sentence Transformer (384-dim), L2-normalizes them, and
    indexes them in a FAISS inner-product index so scores are cosine similarity.
-4. **Retrieve** — at query time, the question is embedded and the top-*k* most
-   similar chunks are returned with scores.
+4. **Retrieve (semantic search)** — at query time, the question is embedded and
+   compared to the chunks by meaning; the top-*k* most similar chunks are
+   returned with scores.
 5. **Guard & generate** — `rag_pipeline` checks the top score against the
    confidence threshold; if it passes, it builds a grounded prompt (system
    rules + recent chat history + context + question) and calls the LLM.
@@ -201,8 +203,8 @@ GROQ_API_KEY=your_groq_api_key_here
 HF_TOKEN=your_huggingface_token_here
 ```
 
-> `.env`, `env.example`, and other local/secret files are gitignored and must
-> not be committed.
+> `.env` and other secret files are gitignored and must not be committed.
+> `.env.example` is a safe template with no real keys, so commit it.
 
 ### Running the app
 
@@ -345,7 +347,7 @@ code changes:
 
 - **UI:** Streamlit
 - **Embeddings:** Sentence Transformers (`all-MiniLM-L6-v2`)
-- **Vector search:** FAISS (CPU)
+- **Semantic search:** FAISS (CPU) over sentence-embedding vectors
 - **Chunking:** LangChain `RecursiveCharacterTextSplitter`
 - **LLM:** Groq (default) / Hugging Face Inference (fallback)
 - **Document parsing:** pypdf, python-docx, python-pptx, pandas + openpyxl/xlrd,

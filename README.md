@@ -22,6 +22,7 @@ Built with [Streamlit](https://streamlit.io/), [FAISS](https://github.com/facebo
 - [How it works (architecture)](#how-it-works-architecture)
 - [Project structure](#project-structure)
 - [Supported file types](#supported-file-types)
+- [Sample documents](#sample-documents)
 - [Getting started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -159,6 +160,15 @@ from outside it.
 > Images and the legacy binary `.doc` format are **not** supported. Files that
 > can't be read are skipped and reported in the UI rather than failing the whole
 > upload.
+
+---
+
+## Sample documents
+
+Want to try it without hunting for files? The `sample_docs/` folder has ready-made
+documents you can upload to test the app. Point the file uploader at them, build
+the knowledge base, and start asking questions. The same folder is the default
+source for the evaluation script (`python evaluate.py`).
 
 ---
 
